@@ -4,6 +4,10 @@ on:
   push:
     tags: [ 'v*' ]
 
+# Add permissions at the workflow level
+permissions:
+  contents: write  # Required for creating releases and uploading assets
+
 jobs:
   build:
     name: Build binaries
@@ -15,12 +19,18 @@ jobs:
           - os: ubuntu-latest
             suffix: linux
             ext: ""
+            archive: tar.gz
+            archive_cmd: tar -czf
           - os: windows-latest
             suffix: windows
             ext: ".exe"
+            archive: zip
+            archive_cmd: zip -r
           - os: macos-latest
             suffix: darwin
             ext: ""
+            archive: tar.gz
+            archive_cmd: tar -czf
 
     steps:
     - name: Checkout code
@@ -38,12 +48,18 @@ jobs:
     - name: Build repeat_events
       run: |
         go build -o bin/repeat_events_${{ matrix.suffix }}${{ matrix.ext }} ./cmd/repeat
-                
-    - name: Upload binaries
+
+    - name: Compress binaries
+      run: |
+        mkdir -p release
+        ${{ matrix.archive_cmd }} release/binaries-${{ matrix.suffix }}.${{ matrix.archive }} bin/
+        
+    - name: Upload compressed binaries
       uses: actions/upload-artifact@v4
       with:
         name: binaries-${{ matrix.suffix }}
-        path: bin/
+        path: release/binaries-${{ matrix.suffix }}.${{ matrix.archive }}
+
   release:
     name: Create Release
     needs: build
