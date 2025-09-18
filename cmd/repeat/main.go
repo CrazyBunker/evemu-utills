@@ -70,8 +70,9 @@ func main() {
 		fmt.Printf("Ошибка записи: %v\n", err)
 		os.Exit(1)
 	}
-
-	fmt.Fprintf(os.Stderr, "Готово! Сгенерировано %d повторов в %s\n", repeatCount, outputFile)
+	if outputFile != "-" {
+		fmt.Fprintf(os.Stderr, "Готово! Сгенерировано %d повторов в %s\n", repeatCount, outputFile)
+	}
 }
 
 // readFromStdin читает данные из stdin и парсит их как EvemuFile
