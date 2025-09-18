@@ -1,5 +1,6 @@
 .vscode
 *.txt
+*.html
 !*.go
 !go.mod
 !go.sum

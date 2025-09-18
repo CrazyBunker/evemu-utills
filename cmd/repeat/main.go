@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"strconv"
 
@@ -46,7 +45,7 @@ func main() {
 	var file *parser.EvemuFile
 
 	if inputFile == "-" {
-		file, err = readFromStdin()
+		file, err = parser.ReadFromStdin()
 	} else {
 		file, err = parser.ParseEvemuFile(inputFile)
 	}
@@ -61,7 +60,7 @@ func main() {
 
 	// Запись результата
 	if outputFile == "-" {
-		err = writeToStdout(repeated)
+		err = repeated.WriteToStdout()
 	} else {
 		err = repeated.WriteToFile(outputFile)
 	}
@@ -73,52 +72,4 @@ func main() {
 	if outputFile != "-" {
 		fmt.Fprintf(os.Stderr, "Готово! Сгенерировано %d повторов в %s\n", repeatCount, outputFile)
 	}
-}
-
-// readFromStdin читает данные из stdin и парсит их как EvemuFile
-func readFromStdin() (*parser.EvemuFile, error) {
-	data, err := io.ReadAll(os.Stdin)
-	if err != nil {
-		return nil, fmt.Errorf("ошибка чтения из stdin: %v", err)
-	}
-
-	// Создаем временный файл для парсинга
-	tmpfile, err := os.CreateTemp("", "stdin_input")
-	if err != nil {
-		return nil, fmt.Errorf("ошибка создания временного файла: %v", err)
-	}
-	defer os.Remove(tmpfile.Name())
-
-	if _, err := tmpfile.Write(data); err != nil {
-		return nil, fmt.Errorf("ошибка записи во временный файл: %v", err)
-	}
-
-	if err := tmpfile.Close(); err != nil {
-		return nil, fmt.Errorf("ошибка закрытия временного файла: %v", err)
-	}
-
-	return parser.ParseEvemuFile(tmpfile.Name())
-}
-
-// writeToStdout записывает EvemuFile в stdout
-func writeToStdout(file *parser.EvemuFile) error {
-	// Создаем временный файл для записи
-	tmpfile, err := os.CreateTemp("", "stdout_output")
-	if err != nil {
-		return fmt.Errorf("ошибка создания временного файла: %v", err)
-	}
-	defer os.Remove(tmpfile.Name())
-
-	if err := file.WriteToFile(tmpfile.Name()); err != nil {
-		return fmt.Errorf("ошибка записи во временный файл: %v", err)
-	}
-
-	// Читаем и выводим содержимое
-	data, err := os.ReadFile(tmpfile.Name())
-	if err != nil {
-		return fmt.Errorf("ошибка чтения временного файла: %v", err)
-	}
-
-	fmt.Print(string(data))
-	return nil
 }
