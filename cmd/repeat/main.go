@@ -3,37 +3,46 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
 
 	"game.com/m/internal/parser"
 )
 
 func main() {
-	if len(os.Args) != 4 {
-		fmt.Println("Использование: repeat_events <входной файл> <количество повторов> <выходной файл>")
-		os.Exit(1)
-	}
+	var config parser.Args
+	var err error
 
-	inputFile := os.Args[1]
-	repeatCount, err := strconv.Atoi(os.Args[2])
+	config, err = parser.ParseArguments(os.Args, "repeat")
+
 	if err != nil {
-		fmt.Printf("Ошибка преобразования количества повторов: %v\n", err)
+		fmt.Printf("Ошибка: %v\n", err)
 		os.Exit(1)
 	}
-	outputFile := os.Args[3]
+	var base *parser.EvemuFile
 
-	file, err := parser.ParseEvemuFile(inputFile)
+	if parser.IsStdio(config.InputFile) {
+		base, err = parser.ReadFromStdin()
+	} else {
+		base, err = parser.ParseEvemuFile(config.InputFile)
+	}
 	if err != nil {
 		fmt.Printf("Ошибка чтения файла: %v\n", err)
 		os.Exit(1)
 	}
 
-	repeated := file.GenerateRepeatedEvents(repeatCount)
+	// Генерация повторений
+	repeated := base.GenerateRepeatedEvents(config.RepeatCount)
 
-	if err := repeated.WriteToFile(outputFile); err != nil {
-		fmt.Printf("Ошибка записи файла: %v\n", err)
-		os.Exit(1)
+	if parser.IsStdio(config.OutputFile) {
+		err = repeated.WriteToStdout()
+	} else {
+		err = repeated.WriteToFile(config.OutputFile)
 	}
 
-	fmt.Printf("Готово! Сгенерировано %d повторов в файле %s\n", repeatCount, outputFile)
+	if err != nil {
+		fmt.Printf("Ошибка записи: %v\n", err)
+		os.Exit(1)
+	}
+	if !parser.IsStdio(config.OutputFile) {
+		fmt.Fprintf(os.Stderr, "Готово! Сгенерировано %d повторов в %s\n", config.RepeatCount, config.OutputFile)
+	}
 }

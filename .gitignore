@@ -1,5 +1,9 @@
 .vscode
 *.txt
+*.html
 !*.go
 !go.mod
 !go.sum
+merge
+repeat
+coverage.out
