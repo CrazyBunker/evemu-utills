@@ -6,3 +6,4 @@
 !go.sum
 merge
 repeat
+coverage.out
