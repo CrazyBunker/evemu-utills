@@ -20,16 +20,16 @@ jobs:
             suffix: linux
             ext: ""
             archive: tar.gz
-            archive_cmd: tar -czf release/evemu-utils-linux.tar.gz bin/
+            archive_cmd: tar -czf dist/evemu-utills-linux.tar.gz bin/
           - os: windows-latest
             suffix: windows
             ext: ".exe"
             archive: zip
-            archive_cmd: Compress-Archive -Path bin/* -DestinationPath release/evemu-utils-windows.zip
+            archive_cmd: Compress-Archive -Path bin/* -DestinationPath dist/evemu-utills-windows.zip
           - os: macos-latest
             suffix: darwin
             ext: ""
-            archive_cmd: tar -czf release/evemu-utils-darwin.tar.gz bin/
+            archive_cmd: tar -czf dist/evemu-utills-darwin.tar.gz bin/
 
     steps:
     - name: Checkout code
@@ -42,11 +42,11 @@ jobs:
 
     - name: Build merge_events
       run: |
-        go build -o bin/merge_events_${{ matrix.suffix }}${{ matrix.ext }} ./cmd/merge
+        go build -o bin/merge-events_${{ matrix.suffix }}${{ matrix.ext }} ./cmd/merge
         
     - name: Build repeat_events
       run: |
-        go build -o bin/repeat_events_${{ matrix.suffix }}${{ matrix.ext }} ./cmd/repeat
+        go build -o bin/repeat-events_${{ matrix.suffix }}${{ matrix.ext }} ./cmd/repeat
 
     - name: Compress binaries
       run: |
@@ -57,7 +57,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: evemu-utils-${{ matrix.suffix }}
-        path: release/evemu-utils-${{ matrix.suffix }}.${{ matrix.archive }}
+        path: dist/evemu-utills-${{ matrix.suffix }}.${{ matrix.archive }}
 
   release:
     needs: build
@@ -66,7 +66,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          path: bin
+          path: dist
 
       - name: Create GitHub Release
         id: create_release
@@ -82,6 +82,6 @@ jobs:
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
         with:
-          files: release/*.
+          files: dist/*.zip,dist/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
