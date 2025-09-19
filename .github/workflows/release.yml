@@ -43,11 +43,11 @@ jobs:
 
     - name: Build merge_events
       run: |
-        go build -o bin/merge-events${{ matrix.ext }} ./cmd/merge
+        go build -o bin/merge-events${{ matrix.ext }} ./cmd/evemu-merge
         
     - name: Build repeat_events
       run: |
-        go build -o bin/repeat-events${{ matrix.ext }} ./cmd/repeat
+        go build -o bin/repeat-events${{ matrix.ext }} ./cmd/evemu-repeat
 
     - name: Compress binaries
       run: |
