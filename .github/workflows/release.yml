@@ -20,17 +20,16 @@ jobs:
             suffix: linux
             ext: ""
             archive: tar.gz
-            archive_cmd: tar -czf
+            archive_cmd: tar -czf release/evemu-utils-linux.tar.gz bin/
           - os: windows-latest
             suffix: windows
             ext: ".exe"
             archive: zip
-            archive_cmd: zip -r
+            archive_cmd: Compress-Archive -Path bin/* -DestinationPath release/evemu-utils-windows.zip
           - os: macos-latest
             suffix: darwin
             ext: ""
-            archive: tar.gz
-            archive_cmd: tar -czf
+            archive_cmd: tar -czf release/evemu-utils-darwin.tar.gz bin/
 
     steps:
     - name: Checkout code
@@ -52,15 +51,13 @@ jobs:
     - name: Compress binaries
       run: |
         mkdir -p release
-        if [ "${{ matrix.os }}" != "windows" ]; then
-          ${{ matrix.archive_cmd }} release/binaries-${{ matrix.suffix }}.${{ matrix.archive }} bin/
-        fi
-        
+        ${{ matrix.archive_cmd }}
+
     - name: Upload compressed binaries
       uses: actions/upload-artifact@v4
       with:
-        name: binaries-${{ matrix.suffix }}
-        path: release/binaries-${{ matrix.suffix }}.${{ matrix.archive }}
+        name: evemu-utils-${{ matrix.suffix }}
+        path: release/evemu-utils-${{ matrix.suffix }}.${{ matrix.archive }}
 
   release:
     needs: build
@@ -69,7 +66,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
-          path: release
+          path: bin
 
       - name: Create GitHub Release
         id: create_release
@@ -85,6 +82,6 @@ jobs:
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
         with:
-          files: release/*
+          files: release/*.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
