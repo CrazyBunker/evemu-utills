@@ -43,11 +43,11 @@ jobs:
 
     - name: Build merge_events
       run: |
-        go build -o bin/merge-events-${{ matrix.suffix }}${{ matrix.ext }} ./cmd/merge
+        go build -o bin/merge-events${{ matrix.ext }} ./cmd/merge
         
     - name: Build repeat_events
       run: |
-        go build -o bin/repeat-events-${{ matrix.suffix }}${{ matrix.ext }} ./cmd/repeat
+        go build -o bin/repeat-events${{ matrix.ext }} ./cmd/repeat
 
     - name: Compress binaries
       run: |
@@ -79,10 +79,33 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload release assets
-        uses: softprops/action-gh-release@v1
+ 
+      - name: Upload Release Asset - Linux
+        uses: actions/upload-release-asset@v1
         with:
-          files: dist/*.zip,dist/*.tar.gz
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/evemu-utills-linux.tar.gz
+          asset_name: evemu-utills-linux.tar.gz
+          asset_content_type: application/gzip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload Release Asset - Windows
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/evemu-utills-windows.zip
+          asset_name: evemu-utills-windows.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Upload Release Asset - MacOS
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/evemu-utills-darwin.tar.gz
+          asset_name: evemu-utills-darwin.tar.gz
+          asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
