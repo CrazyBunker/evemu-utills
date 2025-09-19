@@ -29,6 +29,7 @@ jobs:
           - os: macos-latest
             suffix: darwin
             ext: ""
+            archive: tar.gz
             archive_cmd: tar -czf dist/evemu-utills-darwin.tar.gz bin/
 
     steps:
@@ -42,11 +43,11 @@ jobs:
 
     - name: Build merge_events
       run: |
-        go build -o bin/merge-events_${{ matrix.suffix }}${{ matrix.ext }} ./cmd/merge
+        go build -o bin/merge-events-${{ matrix.suffix }}${{ matrix.ext }} ./cmd/merge
         
     - name: Build repeat_events
       run: |
-        go build -o bin/repeat-events_${{ matrix.suffix }}${{ matrix.ext }} ./cmd/repeat
+        go build -o bin/repeat-events-${{ matrix.suffix }}${{ matrix.ext }} ./cmd/repeat
 
     - name: Compress binaries
       run: |
