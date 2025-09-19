@@ -57,7 +57,7 @@ jobs:
     - name: Upload compressed binaries
       uses: actions/upload-artifact@v4
       with:
-        name: evemu-utils-${{ matrix.suffix }}
+        name: evemu-utills-${{ matrix.suffix }}.${{ matrix.archive }}
         path: dist/evemu-utills-${{ matrix.suffix }}.${{ matrix.archive }}
 
   release:
