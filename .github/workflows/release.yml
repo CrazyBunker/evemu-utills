@@ -49,16 +49,16 @@ jobs:
       run: |
         go build -o bin/repeat-events${{ matrix.ext }} ./cmd/repeat
 
-    - name: Compress binaries
-      run: |
-        mkdir -p dist
-        ${{ matrix.archive_cmd }}
+    # - name: Compress binaries
+    #   run: |
+    #     mkdir -p dist
+    #     ${{ matrix.archive_cmd }}
 
     - name: Upload compressed binaries
       uses: actions/upload-artifact@v4
       with:
-        name: evemu-utills-${{ matrix.suffix }}.${{ matrix.archive }}
-        path: dist/evemu-utills-${{ matrix.suffix }}.${{ matrix.archive }}
+        name: evemu-utills-${{ matrix.suffix }}
+        path: bin
 
   release:
     needs: build
@@ -67,10 +67,12 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          path: dist
+          path: bin
+
       - name: Compress binaries
         run: |
-          ls -la dist/evemu-utills-linux.tar.gz
+          ls -la bin
+
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -86,8 +88,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/evemu-utills-linux.tar.gz
-          asset_name: evemu-utills-linux.tar.gz
+          asset_path: bin/evemu-utills-linux
+          asset_name: evemu-utills-linux.gz
           asset_content_type: application/gzip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -96,7 +98,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/evemu-utills-windows.zip
+          asset_path: bin/evemu-utills-windows
           asset_name: evemu-utills-windows.zip
           asset_content_type: application/zip
         env:
@@ -106,8 +108,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/evemu-utills-darwin.tar.gz
-          asset_name: evemu-utills-darwin.tar.gz
-          asset_content_type: application/zip
+          asset_path: bin/evemu-utills-darwin
+          asset_name: evemu-utills-darwin.gz
+          asset_content_type: application/gzip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
