@@ -88,7 +88,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: bin/evemu-utills-linux
+          asset_path: '["bin/evemu-utills-linux/*"]'
           asset_name: evemu-utills-linux.gz
           asset_content_type: application/gzip
         env:
@@ -98,7 +98,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: bin/evemu-utills-windows
+          asset_path: '["bin/evemu-utills-windows/*"]'
           asset_name: evemu-utills-windows.zip
           asset_content_type: application/zip
         env:
@@ -108,7 +108,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: bin/evemu-utills-darwin
+          asset_path: '["bin/evemu-utills-darwin/*"]'
           asset_name: evemu-utills-darwin.gz
           asset_content_type: application/gzip
         env:
