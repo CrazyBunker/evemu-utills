@@ -50,7 +50,7 @@ jobs:
 
     - name: Compress binaries
       run: |
-        mkdir -p release
+        mkdir -p dist
         ${{ matrix.archive_cmd }}
 
     - name: Upload compressed binaries
